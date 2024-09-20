@@ -1,10 +1,26 @@
-import { config } from 'dotenv';
+// db.js
+const sql = require('mssql');
 
-config();
+const config = {
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    server: process.env.DB_HOST,
+    database: process.env.DB_DATABASE,
+    options: {
+        encrypt: true,
+        trustServerCertificate: true
+    }
+};
 
-export const PORT = process.env.PORT || 3000
-export const DB_USER = process.env.DB_USER || 'root'
-export const DB_PASSWORD = process.env.DB_PASSWORD || ''
-export const DB_HOST = process.env.DB_HOST || 'localhost'
-export const DB_DATABASE = process.env.DB_DATABASE || 'companydb'
-export const DB_PORT = process.env.DB_PORT || 3006
+const connectToDatabase = async () => {
+    try {
+        const pool = await sql.connect(config);
+        console.log('Conectado a la base de datos');
+        return pool;
+    } catch (err) {
+        console.error('Error de conexión:', err);
+        throw err; // Re-lanzar el error para manejarlo en otro lugar si es necesario
+    }
+};
+
+module.exports = connectToDatabase;
